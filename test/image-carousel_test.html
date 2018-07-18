@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>image-carousel test</title>
+  <link rel="import" href="../../polymer/lib/elements/custom-style.html">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../image-carousel.html">
+</head>
+<body>
+  <test-fixture id="BasicTestFixture">
+    <template>
+      <custom-style>
+        <style>
+          image-carousel {
+            --image-container-mixin: {
+              height: 100px;
+            };
+          }
+        </style>
+      </custom-style>
+      <image-carousel style="width: 100px"></image-carousel>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('image-carousel', function() {
+
+      test('instantiating the element with default properties works', function() {
+        const elementArray = fixture('BasicTestFixture');
+        let element = elementArray[1];
+        assert.equal(element.localName, 'image-carousel');
+        assert.equal(element._hideRightIcon, false);
+        assert.equal(element._hideLeftIcon, true);
+      });
+      
+    });
+  </script>
+</body>
+</html>
