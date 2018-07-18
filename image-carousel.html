@@ -1,0 +1,245 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../iron-icon/iron-icon.html">
+<link rel=”import” href=”../iron-iconset-svg/iron-iconset-svg.html”>
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../polymer/lib/mixins/gesture-event-listeners.html">
+<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
+<link href="https://fonts.googleapis.com/css?family=Ropa+Sans" rel="stylesheet">
+
+<dom-module id="image-carousel">
+  <template>
+    <style>
+      :host {
+        @apply --layout;
+        @apply --layout-center;
+        position: relative;
+        width: 100%;
+      }
+
+      :host ::slotted(*) {
+        min-width: 100%;
+        @apply --slotted-content-mixin;
+      }
+
+      h4 {
+        font-family: 'Ropa Sans', sans-serif;
+        color: #749FB8;
+      }
+
+      #image-container {
+        @apply --layout;
+        min-width: 100%;
+        overflow-x: hidden;
+        @apply --image-container-mixin;
+      }
+
+      .navigation-icons {
+        @apply --layout;
+        @apply --layout-center;
+        position: absolute;
+        height: calc(var(--iron-icon-height, 24px) + 15px);
+        background: var(--image-carousel-navigation-icon-color, rgba(255, 255, 255, 1));
+        padding: 0px;
+        border-width: 0px;
+        cursor: pointer;
+        @apply --navigation-icon-mixin;
+      }
+
+      .navigation-icons[hidden] {
+        visibility: hidden;
+      }
+
+      .left-icon {
+        left: calc(var(--iron-icon-width, 24px)/-2);
+        @apply --left-navigation-icon-mixin;
+      }
+
+      .right-icon {
+        right: calc(var(--iron-icon-width, 24px)/-2);
+        @apply --right-navigation-icon-mixin;
+      }
+
+    </style>
+
+    <!-- Created new iron-icon from SVG arrow image -->
+    <iron-iconset-svg name="my-arrow" size=”50">
+      <svg>
+        <defs>
+          <g id="my-arrow">
+            <path d="M3.5,2.1C13.3,12,23.1,20,32.8,29.9C23.1,39.9,13.3,48,3.5,58.1c0-5,0-8,0-13c5.3-4.8,10.6-9.5,16.6-14.9
+            c-6-5.5-11.3-10.3-16.6-15.1C3.5,10.1,3.5,7.1,3.5,2.1z"/>
+          </g>
+        </defs>
+      </svg>
+    </iron-iconset-svg>
+    
+    <button class="navigation-icons left-icon" on-tap="_showPreviousImage" hidden$="[[_hideLeftIcon]]" aria-hidden$="[[_hideLeftIcon]" aria-label="scroll to previous image">
+      <iron-icon icon="chevron-left"></iron-icon>
+    </button>
+    <div id="image-container" role="feed">
+      <slot attribute="images"></slot>
+    </div>
+    <button class="navigation-icons right-icon" on-tap="_showNextImage" hidden$="[[_hideRightIcon]]" aria-hidden$="[[_hideRightIcon]]"  aria-label="scroll to next image">
+      <iron-icon icon="chevron-right"></iron-icon>
+    </button>
+  </template>
+
+  <script>
+    class ImageCarousel extends Polymer.GestureEventListeners(Polymer.Element) {
+      constructor() {
+        super();
+        this._slotChangeHandler = this.computeNumberOfImages.bind(this);
+      }
+      static get is() { 
+        return 'image-carousel'; 
+      }
+      static get properties() {
+        return {
+          /**
+           * Gives index of image on display
+           */
+           currentSelectedItem: {
+            type: Number,
+            value: 0,
+            readOnly: true,
+            notify: true
+          },
+
+          /**
+           * Boolean to hide navigation icons
+           */
+           hideIcons: {
+            type: Boolean,
+            value: false
+          },
+
+          /**
+           * Boolean to hide left navigation icon
+           */
+           _hideLeftIcon: {
+            type: Boolean,
+            computed: '_calcLeftArrowsVal(hideIcons)'
+          },
+
+          /**
+           * Boolean to hide right navigation icon
+           */
+           _hideRightIcon: {
+            type: Boolean,
+            computed: '_calcRightArrowsVal(hideIcons)'
+          },
+
+          /**
+           * Gives total number of images in the carousel
+           */
+           _numberOfImages: {
+            type: Number
+          },
+
+          /**
+           * Element to emulate array of images
+           */
+           _imageArray: {
+            type: Array
+          }
+        };
+      }
+
+      /**
+       * Returns the container which contains the images
+       */
+       get container() {
+        return this.$['image-container'];
+      }
+
+      connectedCallback() {
+        super.connectedCallback();
+        this.shadowRoot.querySelector('slot[attribute="images"]').addEventListener('slotchange', this._slotChangeHandler);
+        this.computeNumberOfImages();
+      }
+
+      /**
+       * The listener on 'slotchange' must be removed to prevent a memory leak
+       */
+      disconnectedCallback() {
+        super.disconnectedCallback();
+        this.shadowRoot.querySelector('slot[attribute="images"]').removeEventListener('slotchange', this._slotChangeHandler);
+      }
+
+      /**
+       * Calculates no of images presented to the carousel and populate _imageArray with those images
+       */
+       computeNumberOfImages() {
+        this._imageArray = Array.from(this.querySelectorAll('.scrolling-images'));
+        this._numberOfImages = this._imageArray.length;
+      }
+
+      /**
+       * Set value of attributes and properties based on new selection
+       */
+       _changeAttrAndProps(e) {
+        this._setCurrentSelectedItem(e.model.index);
+        this._makeCurrentImageFocusable();
+        this._setProperty('_hideRightIcon', this._calcRightArrowsVal(this.hideIcons));
+        this._setProperty('_hideLeftIcon', this._calcLeftArrowsVal(this.hideIcons));
+      }
+
+      /**
+       * Makes selected image focusable and sets focus on it
+       */
+      _makeCurrentImageFocusable() {
+        let idx = 0;
+        for(let img of this._imageArray) {
+          idx === this.currentSelectedItem ? (img.setAttribute("tabindex", 0), img.focus())
+              : img.setAttribute("tabindex", -1);
+          idx++;
+        }
+      }
+
+      /**
+       * Returns details regarding the container
+       * @return {Object}
+       */
+       _getRect() {
+        return this.container.getBoundingClientRect();
+      }
+
+      /**
+       * Calculates visibility of right navigation arrow
+       * @param hideIcons
+       * @return {Boolean}
+       */
+       _calcRightArrowsVal(hideIcons) {
+        return hideIcons || (this._getRect().width ? this.currentSelectedItem === this._numberOfImages-1 : false);
+      }
+
+      /**
+       * Calculates visibility of left navigation arrow
+       * @param hideIcons
+       * @return {Boolean}
+       */
+       _calcLeftArrowsVal(hideIcons) {
+        return hideIcons || this.currentSelectedItem === 0;
+      }
+
+      /**
+       * Changes selected image to previous image in the carousel
+       */
+       _showPreviousImage() {
+        this.container.scrollLeft -= this._getRect().width;
+        this._changeAttrAndProps({model:{index:this.currentSelectedItem-1}});
+      }
+
+      /**
+       * Changes selected image to next image in the carousel
+       */
+       _showNextImage() {
+        this.container.scrollLeft += this._getRect().width;
+        this._changeAttrAndProps({model:{index:this.currentSelectedItem+1}});
+      }
+    }
+
+    window.customElements.define(ImageCarousel.is, ImageCarousel);
+  </script>
+</dom-module>
