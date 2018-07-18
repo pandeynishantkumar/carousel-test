@@ -15,6 +15,11 @@
         color: #749FB8;
         padding: 1%;
       }
+      @media (min-width: 1025px) {
+        img.scrolling-images[tabindex="0"] {
+          border: 10px solid;
+        }
+      }
     </style>
   </head>
   <body>
@@ -23,7 +28,17 @@
       <template>
         <image-carousel aria-labelledby="image-carousel" tabindex="0" role="section">
           <template slot="images" is="dom-repeat" items='[
-              "https://c2.staticflickr.com/2/1217/4607963354_e1a8fea210_z.jpg", "http://www.hdwallpapery.com/static/images/1391099215267_hero2_niQ3B7S.jpg", "https://tse4.mm.bing.net/th?id=ORT.TH_470633631&pid=1.12&eid=G.470633631"]'>
+              "https://c1.staticflickr.com/4/3882/14449028330_23fb0afbd9_h.jpg",
+              "https://c1.staticflickr.com/8/7525/15979278396_76a8091215_c.jpg",
+              "https://c1.staticflickr.com/8/7477/15925084896_2251043a25_z.jpg",
+              "https://c1.staticflickr.com/8/7248/7562017836_8388894b1f_z.jpg",
+              "https://c2.staticflickr.com/2/1217/4607963354_e1a8fea210_z.jpg", 
+              "http://www.hdwallpapery.com/static/images/1391099215267_hero2_niQ3B7S.jpg", 
+              "https://tse4.mm.bing.net/th?id=ORT.TH_470633631&pid=1.12&eid=G.470633631",
+              "https://c1.staticflickr.com/8/7181/6982097675_ab631d05b4_c.jpg",
+              "https://c2.staticflickr.com/2/1319/564620771_c7f7b82712_z.jpg?zz=1",
+              "https://c1.staticflickr.com/9/8032/7904554504_170df12832_z.jpg"
+              ]'>
             <img class="scrolling-images" src="[[item]]" alt$="demo alt [[index]]" height="374px">
           </template>
         </image-carousel>
