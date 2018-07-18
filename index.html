@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Image Carousel Component</title>
+    <link href="https://fonts.googleapis.com/css?family=Ropa+Sans" rel="stylesheet">
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../polymer/polymer-element.html">
+    <link rel="import" href="image-carousel.html">
+    <style>
+      h1 {
+        font-family: 'Ropa Sans', sans-serif;
+        background: #EBEEE7;
+        color: #749FB8;
+        padding: 1%;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 tabindex="0">Carousel Test</h1>
+    <dom-bind>
+      <template>
+        <image-carousel aria-labelledby="image-carousel" tabindex="0" role="section">
+          <template slot="images" is="dom-repeat" items='[
+              "https://c2.staticflickr.com/2/1217/4607963354_e1a8fea210_z.jpg", "http://www.hdwallpapery.com/static/images/1391099215267_hero2_niQ3B7S.jpg", "https://tse4.mm.bing.net/th?id=ORT.TH_470633631&pid=1.12&eid=G.470633631"]'>
+            <img class="scrolling-images" src="[[item]]" alt$="demo alt [[index]]" height="374px">
+          </template>
+        </image-carousel>
+      </template>
+    </dom-bind>
+  </body>
+</html>
